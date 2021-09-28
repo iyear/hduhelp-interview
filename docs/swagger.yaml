@@ -1,0 +1,338 @@
+basePath: /api/v1
+definitions:
+  api.Resp:
+    properties:
+      data: {}
+      error:
+        example: 0
+        type: integer
+      msg:
+        example: ok
+        type: string
+      redirect:
+        example: ' '
+        type: string
+    type: object
+  model.Depart:
+    properties:
+      desc:
+        description: 部门描述
+        type: string
+      id:
+        description: 部门id
+        type: integer
+      name:
+        description: 部门名字
+        type: string
+    type: object
+  model.GetAllDepartsResp:
+    properties:
+      count:
+        description: 部门个数
+        example: 4
+        type: integer
+      departs:
+        description: 详细部门数组
+        items:
+          $ref: '#/definitions/model.Depart'
+        type: array
+    type: object
+  model.GetMeResp:
+    properties:
+      depart:
+        description: 部门名称
+        example: 未选择
+        type: string
+      photo:
+        description: 照片文件名
+        example: df93c5bb-b957-4e24-afa1-9cr2372ef8fe.jpg
+        type: string
+      show:
+        description: 是否显示照片，1为显示，2为不显示
+        example: 1
+        type: integer
+      staff_id:
+        description: 学号
+        example: 21051101
+        type: integer
+      staff_name:
+        description: 姓名
+        example: 小明
+        type: string
+    type: object
+  model.GetOptionsResp:
+    properties:
+      options:
+        description: 选项数组
+        items:
+          $ref: '#/definitions/model.Option'
+        type: array
+      photo:
+        description: 照片
+        example: be4aed10-aaf4-453a-8d4e-e0ace7bc56ea.jpeg
+        type: string
+    type: object
+  model.JudgeOptionResp:
+    properties:
+      name:
+        description: 返回所有使用了这张照片的人，大部分情况下只有一张
+        example:
+        - 小明
+        - 小红
+        - 小黑
+        items:
+          type: string
+        type: array
+      right:
+        description: 是否正确，1为正确，2为不正确
+        example: 2
+        type: integer
+    type: object
+  model.Option:
+    properties:
+      id:
+        description: 学生ID
+        type: integer
+      name:
+        description: 学生姓名
+        type: string
+    type: object
+  model.Photo:
+    properties:
+      file:
+        description: 文件名
+        example: e744fd4e-313f-4977-9642-448927a283c1.jpg
+        type: string
+      size:
+        description: 照片大小
+        example: 1110524
+        type: integer
+    type: object
+  model.UpdateMeReq:
+    properties:
+      depart:
+        description: 部门ID
+        example: 3
+        type: integer
+      photo:
+        description: 照片文件名
+        example: df93c5bb-b957-4e24-afa1-9cr2372ef8fe.jpg
+        type: string
+      show:
+        description: 是否显示照片，1为显示，2为不显示
+        example: 2
+        type: integer
+    required:
+    - depart
+    - photo
+    - show
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: ljyngup@gmail.com
+    name: iyear
+    url: https://github.com/iyear
+  title: 助手破冰API文档
+  version: "1.0"
+paths:
+  /depart/getAll:
+    get:
+      parameters:
+      - description: token <AccessToken>
+        in: header
+        name: authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/api.Resp'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.GetAllDepartsResp'
+              type: object
+      summary: 获取所有部门信息
+      tags:
+      - depart
+  /me/info:
+    get:
+      parameters:
+      - description: token <AccessToken>
+        in: header
+        name: authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/api.Resp'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.GetMeResp'
+              type: object
+      summary: 获取个人信息
+      tags:
+      - me
+  /me/update:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: token <AccessToken>
+        in: header
+        name: authorization
+        required: true
+        type: string
+      - description: 更改后的信息
+        in: body
+        name: object
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateMeReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.Resp'
+      summary: 更新个人信息
+      tags:
+      - me
+  /option/get:
+    get:
+      parameters:
+      - description: token <AccessToken>
+        in: header
+        name: authorization
+        required: true
+        type: string
+      - description: 数量，大于总数或显示照片人数将返回错误
+        in: query
+        name: num
+        required: true
+        type: integer
+      - description: 筛选的部门,-1为不限
+        in: query
+        name: depart
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/api.Resp'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.GetOptionsResp'
+              type: object
+      summary: 获取选项
+      tags:
+      - option
+  /option/judge:
+    get:
+      parameters:
+      - description: token <AccessToken>
+        in: header
+        name: authorization
+        required: true
+        type: string
+      - description: 照片file
+        in: query
+        name: photo
+        required: true
+        type: string
+      - description: 学生id
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/api.Resp'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.JudgeOptionResp'
+              type: object
+      summary: 判断选项
+      tags:
+      - option
+  /photo/me:
+    get:
+      parameters:
+      - description: token <AccessToken>
+        in: header
+        name: authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/api.Resp'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Photo'
+              type: object
+      summary: 获取当前照片
+      tags:
+      - photo
+  /photo/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: token <AccessToken>
+        in: header
+        name: authorization
+        required: true
+        type: string
+      - description: 照片文件
+        in: formData
+        name: photo
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/api.Resp'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Photo'
+              type: object
+      summary: 上传照片
+      tags:
+      - photo
+securityDefinitions:
+  authorization:
+    in: header
+    name: authorization
+    type: apiKey
+swagger: "2.0"
+tags:
+- description: 图片前缀为 [host]/upload/
+  name: photo
