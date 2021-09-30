@@ -26,6 +26,8 @@ port: 8080
 debug: true
 # 前端主页地址
 url: https://baidu.com
+# 对单客户端的每秒请求速率限制 
+limit: 2
 photo:
   # 图片上传大小范围，单位:KB
   min: 50

@@ -4,6 +4,7 @@ type AppConf struct {
 	Port  int        `mapstructure:"port"`
 	Debug bool       `mapstructure:"debug"`
 	Url   string     `mapstructure:"url"`
+	Limit int        `mapstructure:"limit"`
 	Photo *PhotoConf `mapstructure:"photo"`
 	Path  *PathConf  `mapstructure:"path"`
 	Auth  *AuthConf  `mapstructure:"auth"`

@@ -3,6 +3,7 @@ package e
 var errMsg = map[int]string{
 	SUCCESS:                    "ok",
 	UNKNOWN_ERROR:              "未知错误",
+	RATE_LIMIT:                 "请求速度过快",
 	ERROR_EXIST_STU:            "该学生已存在",
 	ERROR_EXIST_STU_FAIL:       "获取学生存在状态失败",
 	ERROR_NOT_EXIST_STU:        "该学生不存在",

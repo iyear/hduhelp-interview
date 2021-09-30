@@ -24,7 +24,7 @@ func Init() *gin.Engine {
 	r.GET("/auth", api.Auth)
 
 	apiV1 := r.Group("/api/v1")
-	apiV1.Use(middleware.Auth())
+	apiV1.Use(middleware.RateLimit(middleware.RateLimitInit()), middleware.Auth())
 	{
 		apiV1.GET("/option/get", v1.GetOptions)
 		apiV1.GET("/option/judge", v1.JudgeOption)
