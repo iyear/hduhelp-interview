@@ -1,0 +1,35 @@
+# 监听端口
+port: 8080
+# DEBUG Mode
+debug: true
+# 前端主页地址
+url: https://baidu.com
+# 对单客户端的每秒请求速率限制
+limit: 2
+photo:
+  # 图片上传大小范围，单位:KB
+  min: 50
+  max: 5120
+  # 图片MIME限制
+  mime:
+    - image/jpeg
+    - image/png
+path:
+  # 以 / 结尾
+  # 图片保存位置
+  photo: ./data/upload/
+  # 临时目录(暂时无用)
+  temp: ./data/tmp/
+mysql:
+  # mysql信息
+  host: 127.0.0.1
+  port: 3306
+  user: root
+  password: root
+  database: hduhelp
+auth:
+  # 杭电助手OAuth信息
+  client_id: xxxxxxxxx
+  client_secret: xxxxxxxxxxxxxxx
+  # 后端登录Callback地址
+  redirect_url: http://localhost:8080/auth
