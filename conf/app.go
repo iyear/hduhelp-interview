@@ -1,33 +1,33 @@
 package conf
 
 type AppConf struct {
-	Port  int        `mapstructure:"port"`
-	Debug bool       `mapstructure:"debug"`
-	Url   string     `mapstructure:"url"`
-	Limit int        `mapstructure:"limit"`
-	Photo *PhotoConf `mapstructure:"photo"`
-	Path  *PathConf  `mapstructure:"path"`
-	Auth  *AuthConf  `mapstructure:"auth"`
-	Mysql *MYSQLConf `mapstructure:"mysql"`
+	Port  int    `mapstructure:"port"`
+	Debug bool   `mapstructure:"debug"`
+	Url   string `mapstructure:"url"`
+	Limit int    `mapstructure:"limit"`
+	Photo *Photo `mapstructure:"photo"`
+	Path  *Path  `mapstructure:"path"`
+	Auth  *Auth  `mapstructure:"auth"`
+	Mysql *Mysql `mapstructure:"mysql"`
 }
 
-type MYSQLConf struct {
+type Mysql struct {
 	Host     string `mapstructure:"host"`
 	Port     int    `mapstructure:"port"`
 	User     string `mapstructure:"user"`
 	Password string `mapstructure:"password"`
 	Database string `mapstructure:"database"`
 }
-type AuthConf struct {
+type Auth struct {
 	ClientID     string `mapstructure:"client_id"`
 	ClientSecret string `mapstructure:"client_secret"`
 	RedirectUrl  string `mapstructure:"redirect_url"`
 }
-type PathConf struct {
+type Path struct {
 	Photo string `mapstructure:"photo"`
 	Temp  string `mapstructure:"temp"`
 }
-type PhotoConf struct {
+type Photo struct {
 	Min  int64    `mapstructure:"min"`
 	Max  int64    `mapstructure:"max"`
 	MIME []string `mapstructure:"mime"`
