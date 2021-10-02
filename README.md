@@ -26,6 +26,7 @@ swag init
 # 监听端口
 port: 8080 
 # DEBUG Mode
+# 开启后将启用 Gin Logger,Gorm Logger,Swagger Doc
 debug: true
 # 前端主页地址，末尾带/
 url: https://baidu.com/

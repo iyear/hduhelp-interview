@@ -3,12 +3,12 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/iyear/hduhelp-interview/api"
-	v1 "github.com/iyear/hduhelp-interview/api/v1"
+	"github.com/iyear/hduhelp-interview/api/v1"
 	"github.com/iyear/hduhelp-interview/conf"
 	_ "github.com/iyear/hduhelp-interview/docs"
 	"github.com/iyear/hduhelp-interview/middleware"
 	"github.com/iyear/hduhelp-interview/util"
-	"github.com/swaggo/gin-swagger"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
 )
 
@@ -17,10 +17,14 @@ func Init() *gin.Engine {
 
 	r := gin.New()
 	r.Use(middleware.Recovery(), gin.Logger())
+	// 前端
+	// r.Use(static.Serve("/", static.LocalFile("./static", false)))
 
 	r.StaticFS("/upload", gin.Dir(conf.App.Path.Photo, false))
 
-	r.GET("/doc/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	if conf.App.Debug {
+		r.GET("/doc/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	}
 	r.GET("/auth", api.Auth)
 
 	apiV1 := r.Group("/api/v1")
