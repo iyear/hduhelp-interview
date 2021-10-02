@@ -6,13 +6,16 @@
 
 以前一直没有用 `Go` 正经写过 `Web` 项目，趁这个机会把开发小型 `Web` 项目的整个流程学习一下，并总结自己的一套项目结构。
 
-## API文档
-
+## 文档
+### API
 ```
 // <host>/doc/index.html
 swag init
 ```
-
+### 前端获取AccessToken
+在登录回调成功后，后端会发起一个 `<host>/#/token=<AccessToken>` 的重定向
+   
+前端可在此阶段获取 `token` 并存于 `Cookie` 或 `LocalStorage`，并在每次请求时将 `token` 置于鉴权头中
 ## 配置文件
 
 根目录下新建 `config.yml`
@@ -24,8 +27,8 @@ swag init
 port: 8080 
 # DEBUG Mode
 debug: true
-# 前端主页地址
-url: https://baidu.com
+# 前端主页地址，末尾带/
+url: https://baidu.com/
 # 对单客户端的每秒请求速率限制 
 limit: 2
 photo:

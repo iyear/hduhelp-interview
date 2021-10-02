@@ -15,6 +15,7 @@ import (
 )
 
 func Auth(c *gin.Context) {
+	var token string
 	err := func() error {
 		// 拿AccessToken
 		var resp *model.AuthAccept
@@ -36,9 +37,10 @@ func Auth(c *gin.Context) {
 		}
 
 		// 拿信息写入
+		token = gjson.Get(string(resp.Data), "access_token").String()
 		err = gout.GET("https://api.hduhelp.com/base/person/info").
 			SetHeader(gout.H{
-				"authorization": "token " + gjson.Get(string(resp.Data), "access_token").String(),
+				"authorization": "token " + token,
 			}).BindJSON(&resp).Do()
 		if err != nil {
 			return err
@@ -72,7 +74,7 @@ func Auth(c *gin.Context) {
 			"")
 		return
 	}
-	c.Redirect(http.StatusFound, conf.App.Url)
+	c.Redirect(http.StatusFound, fmt.Sprintf("%s#/token=%s", conf.App.Url, token))
 }
 func GetRedirectUrl() string {
 	s := util.GetRandomString(10)
