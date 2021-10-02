@@ -2,6 +2,7 @@ package srv_me
 
 import (
 	"errors"
+	"github.com/iyear/hduhelp-interview/db"
 	"github.com/iyear/hduhelp-interview/model"
 	"github.com/iyear/hduhelp-interview/service/srv_depart"
 	"github.com/iyear/hduhelp-interview/service/srv_photo"
@@ -9,30 +10,16 @@ import (
 )
 
 func GetMe(staffID int64) (*model.GetMeResp, error) {
-	var (
-		stu *model.Student
-		p   *model.Photo
-		d   *model.Depart
-		err error
-	)
-
-	if stu, err = srv_stu.GetStudent(2, staffID); err != nil {
+	var resp *model.GetMeResp
+	if err := db.Mysql.Table("students").
+		Select("students.staff_id, students.staff_name, students.show, photos.file AS photo, departs.name AS depart").
+		Joins("LEFT JOIN photos ON photos.id = students.photo").
+		Joins("LEFT JOIN departs ON departs.id = students.depart").
+		Where("students.staff_id = ?", staffID).
+		Limit(1).First(&resp).Error; err != nil {
 		return nil, err
 	}
-	if p, err = srv_photo.GetPhotoByID(stu.Photo); err != nil {
-		return nil, err
-	}
-	if d, err = srv_depart.GetDepart(stu.Depart); err != nil {
-		return nil, err
-	}
-
-	return &model.GetMeResp{
-		StaffID:   stu.StaffID,
-		StaffName: stu.StaffName,
-		Photo:     p.File,
-		Show:      stu.Show,
-		Depart:    d.Name,
-	}, nil
+	return resp, nil
 }
 func UpdateMe(staffID int64, req *model.UpdateMeReq) error {
 	var (
