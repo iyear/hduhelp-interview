@@ -18,12 +18,10 @@ func GetStaffPhoto(staffID int64) (*model.Photo, error) {
 		stu *model.Student
 		err error
 	)
-	stu, err = srv_stu.GetStudent(2, staffID)
-	if err != nil {
+	if stu, err = srv_stu.GetStudent(2, staffID); err != nil {
 		return nil, err
 	}
-	p, err = GetPhotoByID(stu.Photo)
-	if err != nil {
+	if p, err = GetPhotoByID(stu.Photo); err != nil {
 		return nil, err
 	}
 	return p, nil
@@ -70,7 +68,7 @@ func UploadPhoto(file *multipart.FileHeader) (*model.Photo, error) {
 	if err = util.SaveUploadedFile(file, conf.App.Path.Photo+name); err != nil {
 		return nil, err
 	}
-	var p = &model.Photo{
+	p := &model.Photo{
 		File: name,
 		Size: file.Size,
 	}

@@ -63,30 +63,30 @@ func getFilterStu(stu []*model.Student, depart int64) []*model.Student {
 // JudgeOption photo为图片file,id为 GetOptions 的返回值中的id
 func JudgeOption(photo string, id int64) (*model.JudgeOptionResp, error) {
 	var (
-		ChosenStu *model.Student
-		rightStus []*model.Student
-		results   []string
-		p         *model.Photo
-		err       error
+		choose  *model.Student
+		right   []*model.Student
+		results []string
+		p       *model.Photo
+		err     error
 	)
 	if p, err = srv_photo.GetPhotoByFile(photo); err != nil {
 		return nil, err
 	}
-	if ChosenStu, err = srv_stu.GetStudent(1, id); err != nil {
+	if choose, err = srv_stu.GetStudent(1, id); err != nil {
 		return nil, err
 	}
 
-	if ChosenStu.Photo == p.ID {
+	if choose.Photo == p.ID {
 		return &model.JudgeOptionResp{
 			Right: 1,
 		}, nil
 	}
 
 	// 找到正确的照片，有可能多人用同一张默认照片，返回数组
-	if err = db.Mysql.Where("photo = ?", p.ID).Find(&rightStus).Error; err != nil {
+	if err = db.Mysql.Where("photo = ?", p.ID).Find(&right).Error; err != nil {
 		return nil, err
 	}
-	for _, s := range rightStus {
+	for _, s := range right {
 		results = append(results, s.StaffName)
 	}
 	return &model.JudgeOptionResp{

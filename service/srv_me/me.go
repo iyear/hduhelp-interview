@@ -11,7 +11,7 @@ import (
 
 func GetMe(staffID int64) (*model.GetMeResp, error) {
 	var resp *model.GetMeResp
-	if err := db.Mysql.Table("students").
+	if err := db.Mysql.Model(&model.Student{}).
 		Select("students.staff_id, students.staff_name, students.show, photos.file AS photo, departs.name AS depart").
 		Joins("LEFT JOIN photos ON photos.id = students.photo").
 		Joins("LEFT JOIN departs ON departs.id = students.depart").

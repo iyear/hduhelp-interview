@@ -19,15 +19,13 @@ func Auth(c *gin.Context) {
 	err := func() error {
 		// 拿AccessToken
 		var resp *model.AuthAccept
-		code := c.Query("code")
-		state := c.Query("state")
 		err := gout.GET("https://api.hduhelp.com/oauth/token").
 			SetQuery(gout.H{
 				"client_id":     conf.App.Auth.ClientID,
 				"client_secret": conf.App.Auth.ClientSecret,
 				"grant_type":    "authorization_code",
-				"code":          code,
-				"state":         state,
+				"code":          c.Query("code"),
+				"state":         c.Query("state"),
 			}).BindJSON(&resp).Do()
 		if err != nil {
 			return err
