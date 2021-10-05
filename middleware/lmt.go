@@ -7,6 +7,7 @@ import (
 	"github.com/iyear/hduhelp-interview/api"
 	"github.com/iyear/hduhelp-interview/conf"
 	"github.com/iyear/hduhelp-interview/conf/e"
+	"go.uber.org/zap"
 )
 
 func RateLimit(lmt *limiter.Limiter) gin.HandlerFunc {
@@ -20,11 +21,15 @@ func RateLimit(lmt *limiter.Limiter) gin.HandlerFunc {
 				Redirect: "",
 				Data:     nil,
 			})
+			zap.S().Infow("rate limit",
+				"ip", c.ClientIP(),
+				"ua", c.Request.UserAgent(),
+				"path", c.Request.RequestURI)
 			return
 		}
 		c.Next()
 	}
 }
 func RateLimitInit() *limiter.Limiter {
-	return tollbooth.NewLimiter(float64(conf.App.Limit), nil)
+	return tollbooth.NewLimiter(conf.App.Limit, nil)
 }

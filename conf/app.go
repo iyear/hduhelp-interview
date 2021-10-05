@@ -1,14 +1,14 @@
 package conf
 
 type AppConf struct {
-	Port  int    `mapstructure:"port"`
-	Debug bool   `mapstructure:"debug"`
-	Url   string `mapstructure:"url"`
-	Limit int    `mapstructure:"limit"`
-	Photo *Photo `mapstructure:"photo"`
-	Path  *Path  `mapstructure:"path"`
-	Auth  *Auth  `mapstructure:"auth"`
-	Mysql *Mysql `mapstructure:"mysql"`
+	Port  int     `mapstructure:"port"`
+	Debug bool    `mapstructure:"debug"`
+	Url   string  `mapstructure:"url"`
+	Limit float64 `mapstructure:"limit"`
+	Photo *Photo  `mapstructure:"photo"`
+	Path  *Path   `mapstructure:"path"`
+	Auth  *Auth   `mapstructure:"auth"`
+	Mysql *Mysql  `mapstructure:"mysql"`
 }
 
 type Mysql struct {
