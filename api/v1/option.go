@@ -16,7 +16,7 @@ import (
 // @Produce json
 // @Param authorization header string true "token <AccessToken>"
 // @Param num query int true "数量，大于总数或显示照片人数将返回错误"
-// @Param depart query int true "筛选的部门,-1为不限"
+// @Param depart query int true "筛选的部门,-2为不限"
 // @Success 200 object api.Resp{data=model.GetOptionsResp}
 // @Router /option/get [get]
 func GetOptions(c *gin.Context) {

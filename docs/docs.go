@@ -173,7 +173,7 @@ var doc = `{
                     },
                     {
                         "type": "integer",
-                        "description": "筛选的部门,-1为不限",
+                        "description": "筛选的部门,-2为不限",
                         "name": "depart",
                         "in": "query",
                         "required": true

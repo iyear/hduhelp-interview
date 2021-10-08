@@ -1,12 +1,8 @@
 package srv_me
 
 import (
-	"errors"
 	"github.com/iyear/hduhelp-interview/db"
 	"github.com/iyear/hduhelp-interview/model"
-	"github.com/iyear/hduhelp-interview/service/srv_depart"
-	"github.com/iyear/hduhelp-interview/service/srv_photo"
-	"github.com/iyear/hduhelp-interview/service/srv_stu"
 )
 
 func GetMe(staffID int64) (*model.GetMeResp, error) {
@@ -27,25 +23,23 @@ func UpdateMe(staffID int64, req *model.UpdateMeReq) error {
 		p   *model.Photo
 		err error
 	)
-	if req == nil {
-		return errors.New("req is nil")
-	}
-	if stu, err = srv_stu.GetStudent(2, staffID); err != nil {
+
+	if err = db.Mysql.Where("staff_id = ?", staffID).Limit(1).First(&stu).Error; err != nil {
 		return err
 	}
 	// photo是否存在
-	if p, err = srv_photo.GetPhotoByFile(req.Photo); err != nil {
+	if err = db.Mysql.Where("file = ?", req.Photo).Limit(1).First(&p).Error; err != nil {
 		return err
 	}
 	// depart是否存在
-	if _, err = srv_depart.GetDepart(req.Depart); err != nil {
+	if err = db.Mysql.Where("id = ?", req.Depart).Limit(1).First(&model.Depart{}).Error; err != nil {
 		return err
 	}
 	stu.Photo = p.ID
 	stu.Depart = req.Depart
 	stu.Show = req.Show
 
-	if err = srv_stu.UpdateStudent(stu); err != nil {
+	if err = db.Mysql.Save(&stu).Error; err != nil {
 		return err
 	}
 	return nil

@@ -4,8 +4,6 @@ import (
 	"errors"
 	"github.com/iyear/hduhelp-interview/db"
 	"github.com/iyear/hduhelp-interview/model"
-	"github.com/iyear/hduhelp-interview/service/srv_photo"
-	"github.com/iyear/hduhelp-interview/service/srv_stu"
 	"math/rand"
 	"time"
 )
@@ -13,21 +11,22 @@ import (
 func GetOptions(n int, depart int64) (*model.GetOptionsResp, error) {
 	var (
 		results []*model.Option
-		stu     []*model.Student
 		shows   []*model.Student
 		photo   *model.Photo
 		err     error
 	)
 	rand.Seed(time.Now().UnixNano())
+	// 不限部门
+	if depart == -2 {
+		err = db.Mysql.Where("`show` = ?", 1).Find(&shows).Error
+	} else {
+		err = db.Mysql.Where("`show` = ? and depart = ?", 1, depart).Find(&shows).Error
+	}
 
-	if stu, err = srv_stu.GetAllStudents(); err != nil {
+	if err != nil {
 		return nil, err
 	}
-	if len(stu) < n {
-		return nil, errors.New("n is bigger than len of students")
-	}
-
-	if shows = getFilterStu(stu, depart); len(shows) < n {
+	if len(shows) < n {
 		return nil, errors.New("n is bigger than len of shows")
 	}
 
@@ -41,7 +40,9 @@ func GetOptions(n int, depart int64) (*model.GetOptionsResp, error) {
 		})
 	}
 
-	if photo, err = srv_photo.GetPhotoByID(shows[rand.Intn(n)].Photo); err != nil {
+	if err = db.Mysql.Where("id = ?", shows[rand.Intn(n)].Photo).
+		Limit(1).
+		First(&photo).Error; err != nil {
 		return nil, err
 	}
 	return &model.GetOptionsResp{
@@ -49,45 +50,36 @@ func GetOptions(n int, depart int64) (*model.GetOptionsResp, error) {
 		Options: results,
 	}, nil
 }
-func getFilterStu(stu []*model.Student, depart int64) []*model.Student {
-	var shows []*model.Student
-	for _, s := range stu {
-		// depart = -1 不筛选部门
-		if s.Show == 1 && (s.Depart == depart || depart == -1) {
-			shows = append(shows, s)
-		}
-	}
-	return shows
-}
 
 // JudgeOption photo为图片file,id为 GetOptions 的返回值中的id
 func JudgeOption(photo string, id int64) (*model.JudgeOptionResp, error) {
-	var (
-		choose  *model.Student
-		right   []*model.Student
-		results []string
-		p       *model.Photo
-		err     error
-	)
-	if p, err = srv_photo.GetPhotoByFile(photo); err != nil {
-		return nil, err
-	}
-	if choose, err = srv_stu.GetStudent(1, id); err != nil {
-		return nil, err
-	}
-
-	if choose.Photo == p.ID {
+	err := db.Mysql.
+		Joins("LEFT JOIN photos ON students.photo = photos.id").
+		Where("students.id = ? AND photos.file = ?", id, photo).
+		Limit(1).First(&model.Student{}).Error
+	if err == nil {
 		return &model.JudgeOptionResp{
 			Right: 1,
 		}, nil
 	}
 
 	// 找到正确的照片，有可能多人用同一张默认照片，返回数组
-	if err = db.Mysql.Where("photo = ?", p.ID).Find(&right).Error; err != nil {
+	var names []*struct {
+		Name string `json:"name"`
+	}
+	err = db.Mysql.
+		Model(&model.Student{}).
+		Select("students.staff_name AS name").
+		Joins("LEFT JOIN photos ON photos.id = students.photo").
+		Where("photos.file = ?", photo).
+		Find(&names).Error
+	if err != nil {
 		return nil, err
 	}
-	for _, s := range right {
-		results = append(results, s.StaffName)
+
+	var results []string
+	for _, name := range names {
+		results = append(results, name.Name)
 	}
 	return &model.JudgeOptionResp{
 		Right: 2,
